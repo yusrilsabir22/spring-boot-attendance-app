@@ -1,15 +1,18 @@
-package com.test.absensi.pegawai;
+package com.test.absensi.service;
 
+import com.test.absensi.models.Pegawai;
+import com.test.absensi.repositories.PegawaiRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PegawaiService {
 
-    @Autowired
-    private PegawaiRepository pegawaiRepository;
+    private final PegawaiRepository pegawaiRepository;
 
     public List<Pegawai> getAllPegawai() {
         return pegawaiRepository.findAll();
