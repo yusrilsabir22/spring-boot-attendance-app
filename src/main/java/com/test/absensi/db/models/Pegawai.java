@@ -15,12 +15,12 @@ import java.util.UUID;
 public class Pegawai {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", insertable = false)
-    private UUID id;
+    @Column(name = "nik_user")
+    private String nikUser;
 
-    @Enumerated(EnumType.STRING)
-    private Profile profile;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "nama_lengkap")
     private String namaLengkap;
@@ -31,43 +31,33 @@ public class Pegawai {
     @Column(name = "tanggal_lahir")
     private int tanggalLahir;
 
-    @Column(unique = true)
-    private String email;
+    @ManyToOne
+    @JoinColumn(name = "kd_departemen")
+    private Departemen departemen;
 
-    private String password;
-
-    @Column(name = "nik_user")
-    private String nikUser;
-
-    @Column(name="kd_jabatan")
-    private Integer kdJabatan;
-
-    @Column(name = "nama_jabatan")
-    private String namaJabatan;
-
-    @Column(name = "kd_departemen")
-    private Integer kdDepartemen;
-
-    @Column(name = "nama_departemen")
-    private String namaDepartemen;
-
-    @Column(name = "kd_unit_kerja")
-    private Integer kdUnitKerja;
-
-    @Column(name = "nama_unit_kerja")
-    private String namaUnitKerja;
-
-    @Column(name = "kd_jenis_kelamin")
-    private Integer kdJenisKelamin;
-
-    @Column(name = "nama_jenis_kelamin")
-    private String namaJenisKelamin;
-
-    @Column(name = "kd_pendidikan")
-    private Integer kdPendidikan;
-
-    @Column(name = "nama_pendidikan")
-    private String namaPendidikan;
+//    @Column(name="kd_jabatan")
+//    private Integer kdJabatan;
+//
+//    @Column(name = "nama_jabatan")
+//    private String namaJabatan;
+//
+//    @Column(name = "kd_unit_kerja")
+//    private Integer kdUnitKerja;
+//
+//    @Column(name = "nama_unit_kerja")
+//    private String namaUnitKerja;
+//
+//    @Column(name = "kd_jenis_kelamin")
+//    private Integer kdJenisKelamin;
+//
+//    @Column(name = "nama_jenis_kelamin")
+//    private String namaJenisKelamin;
+//
+//    @Column(name = "kd_pendidikan")
+//    private Integer kdPendidikan;
+//
+//    @Column(name = "nama_pendidikan")
+//    private String namaPendidikan;
 
     private String photo;
 

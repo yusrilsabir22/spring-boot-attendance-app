@@ -1,6 +1,7 @@
 package com.test.absensi.service;
 
 import com.test.absensi.db.models.Pegawai;
+import com.test.absensi.db.models.User;
 import com.test.absensi.repositories.PegawaiRepository;
 import com.test.absensi.utils.Utils;
 import lombok.RequiredArgsConstructor;
@@ -13,34 +14,26 @@ import java.util.List;
 public class PegawaiService {
 
     private final PegawaiRepository pegawaiRepository;
+    private final UserService userService;
 
     public List<Pegawai> getAllPegawai() {
         return pegawaiRepository.findAll();
     }
 
-    public Pegawai add(Pegawai pegawai) {
-        String password = Utils.randomPasswordGenerator(16);
-        Pegawai newPegawai = Pegawai.builder()
-                .profile(pegawai.getProfile())
-                .namaLengkap(pegawai.getNamaLengkap())
-                .tempatLahir(pegawai.getTempatLahir())
-                .email(pegawai.getEmail())
-                .password(password)
-                .nikUser(pegawai.getNikUser())
-                .kdJabatan(pegawai.getKdJabatan())
-                .namaJabatan(pegawai.getNamaJabatan())
-                .kdDepartemen(pegawai.getKdDepartemen())
-                .namaDepartemen(pegawai.getNamaDepartemen())
-                .kdUnitKerja(pegawai.getKdUnitKerja())
-                .namaUnitKerja(pegawai.getNamaUnitKerja())
-                .kdJenisKelamin(pegawai.getKdJenisKelamin())
-                .namaJenisKelamin(pegawai.getNamaJenisKelamin())
-                .kdPendidikan(pegawai.getKdPendidikan())
-                .namaPendidikan(pegawai.getNamaPendidikan())
-                .photo(pegawai.getPhoto())
-                .build();
-
-        return pegawaiRepository.save(newPegawai);
+    public String add(Pegawai pegawai) {
+//        String password = Utils.randomPasswordGenerator(16);
+//        String email = pegawai.getNamaLengkap()+"@"+pegawai.getNamaLengkap()+".com";
+//        User user =
+//        Pegawai newPegawai = Pegawai.builder()
+//                .namaLengkap(pegawai.getNamaLengkap())
+//                .tempatLahir(pegawai.getTempatLahir())
+//                .nikUser(pegawai.getNikUser())
+//                .user()
+//                .photo(pegawai.getPhoto())
+//                .build();
+//
+//        return pegawaiRepository.save(newPegawai);
+        return "ok";
     }
 
 }
