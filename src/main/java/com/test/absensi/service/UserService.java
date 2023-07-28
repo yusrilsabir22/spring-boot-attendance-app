@@ -1,11 +1,10 @@
 package com.test.absensi.service;
 
 import com.test.absensi.exceptions.EtAuthException;
-import com.test.absensi.models.InitDataResponse;
-import com.test.absensi.models.User;
+import com.test.absensi.db.models.User;
+import com.test.absensi.models.Request;
 import com.test.absensi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -18,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    public String login(InitDataResponse request) {
+    public String login(Request.Login request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if(user.isEmpty()) {
             throw new EtAuthException("invalid email or password");

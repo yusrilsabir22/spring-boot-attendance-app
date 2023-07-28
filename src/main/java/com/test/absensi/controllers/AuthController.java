@@ -1,12 +1,11 @@
 package com.test.absensi.controllers;
 
-import com.test.absensi.models.InitDataRequest;
-import com.test.absensi.models.InitDataResponse;
-import com.test.absensi.models.User;
+import com.test.absensi.db.models.User;
+import com.test.absensi.models.Request;
+import com.test.absensi.models.Response;
 import com.test.absensi.service.PerusahaanService;
 import com.test.absensi.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,22 +20,23 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping(path="/init-data")
-    public ResponseEntity<InitDataResponse> initData(
-            @RequestBody InitDataRequest request
+    public ResponseEntity<Response.InitData> initData(
+            @RequestBody Request.InitData request
     ) {
         System.out.println(request);
         User user = perusahaanService.initData(request);
-        InitDataResponse response = new InitDataResponse(
-                user.getUsername(),
-                user.getPassword(),
-                user.getProfile()
-        );
+        Response.InitData response = Response.InitData.builder()
+                .email(user.getUsername())
+                .password(user.getPassword())
+                .profile(user.getProfile())
+                .build();
+
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(path="/login")
     public ResponseEntity<String> login(
-            @RequestBody InitDataResponse request
+            @RequestBody Request.Login request
     ) {
         return ResponseEntity.ok(userService.login(request));
     }

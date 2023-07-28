@@ -1,7 +1,7 @@
 package com.test.absensi.repositories;
 
 
-import com.test.absensi.models.Perusahaan;
+import com.test.absensi.db.models.Perusahaan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

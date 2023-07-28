@@ -1,4 +1,4 @@
-package com.test.absensi.models;
+package com.test.absensi.db.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

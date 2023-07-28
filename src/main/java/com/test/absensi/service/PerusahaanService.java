@@ -1,12 +1,13 @@
 package com.test.absensi.service;
 
 
+import com.test.absensi.db.models.Perusahaan;
+import com.test.absensi.db.models.User;
 import com.test.absensi.models.*;
 import com.test.absensi.repositories.PerusahaanRepository;
 import com.test.absensi.repositories.UserRepository;
 import com.test.absensi.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class PerusahaanService {
 
     private final JwtService jwtService;
 
-    public User initData(InitDataRequest request) {
+    public User initData(Request.InitData request) {
 
         String password = Utils.randomPasswordGenerator(16);
         String email = request.getNamaAdmin()+"@"+request.getPerusahaan()+".com";
