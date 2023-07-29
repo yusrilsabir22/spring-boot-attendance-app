@@ -5,8 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public class Response {
+import java.util.Optional;
 
+public class Response {
     @Data
     @Builder
     @AllArgsConstructor
@@ -35,8 +36,8 @@ public class Response {
     @Data
     @AllArgsConstructor
     public static class Error {
-        int errorCode;
-        String errorMessage;
+        int statusCode;
+        String message;
     }
 
 }

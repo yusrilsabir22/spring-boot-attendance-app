@@ -34,7 +34,7 @@ public class AppConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("invalid email or passwords"));
+                .orElseThrow(() -> new UsernameNotFoundException("Unauthorized"));
     }
 
     @Bean
@@ -54,23 +54,6 @@ public class AppConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-//    @Bean
-//    public AuthenticationEntryPoint authenticationEntryPoint() {
-
-//        return (request, response, authException) -> {
-//            System.out.println(authException.getClass());
-//            Response.Error re = new Response.Error(HttpStatus.UNAUTHORIZED.value(), "invalid email or password");
-//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            OutputStream responseStream = response.getOutputStream();
-//            ObjectMapper mapper = new ObjectMapper();
-//            mapper.writeValue(responseStream, re);
-//            responseStream.flush();
-
-//            exceptionResolver.resolveException(request, response, null, authException);
-//        };
-//    }
 
 
 }

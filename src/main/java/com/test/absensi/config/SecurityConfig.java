@@ -3,7 +3,6 @@ package com.test.absensi.config;
 import com.test.absensi.models.Permission;
 import com.test.absensi.models.Profile;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,7 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,15 +23,14 @@ public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
 
-    @Qualifier("delegatedAuthenticationEntryPoint")
-    private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**")
+                        .requestMatchers("/api/auth/**", "/api/public/**")
                         .permitAll()
 
                         .requestMatchers("/api/pegawai/**").hasAnyRole(Profile.ADMIN.name(), Profile.MANAGER.name(), Profile.USER.name())
@@ -49,9 +46,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .exceptionHandling(httpException -> httpException
                         .authenticationEntryPoint(authenticationEntryPoint))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(httpException -> httpException
-                        .configure(http));
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
