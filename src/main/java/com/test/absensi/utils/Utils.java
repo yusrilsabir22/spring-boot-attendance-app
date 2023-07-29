@@ -1,5 +1,8 @@
 package com.test.absensi.utils;
 
+import com.test.absensi.db.models.User;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.util.Random;
 
 public class Utils {
@@ -15,8 +18,9 @@ public class Utils {
         return sb.toString();
     }
 
-    public static String extractUsername(String token) {
-        return null;
+    public static User getUserSession() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal();
     }
 
 }

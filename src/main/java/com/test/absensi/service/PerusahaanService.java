@@ -21,15 +21,12 @@ public class PerusahaanService {
 
     private final UserRepository userRepository;
 
-    private final JwtService jwtService;
-
     public User initData(Request.InitData request) {
 
         String password = Utils.randomPasswordGenerator(16);
         String email = request.getNamaAdmin()+"@"+request.getPerusahaan()+".com";
         Profile profile = Profile.ADMIN;
 
-        Optional<User> currentUser = userRepository.findByEmail(email);
         Optional<Perusahaan> currentPerusahaan = perusahaanRepository.findOne(request.getPerusahaan());
         final Perusahaan perusahaan;
         if(currentPerusahaan.isEmpty()) {
@@ -39,6 +36,7 @@ public class PerusahaanService {
             perusahaan = currentPerusahaan.get();
         }
 
+        Optional<User> currentUser = userRepository.findByEmail(email);
         if(currentUser.isPresent()) {
             return currentUser.get();
         }
@@ -48,9 +46,6 @@ public class PerusahaanService {
         return userRepository.save(user);
     }
 
-    public Optional<Perusahaan> getPerusahaan(String perusahaan) {
-        return perusahaanRepository.findOne(perusahaan);
-    }
 
     public List<Perusahaan> getAllPerusahaan() {
         return perusahaanRepository.findAll();

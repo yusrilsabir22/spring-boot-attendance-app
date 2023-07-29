@@ -1,9 +1,6 @@
 package com.test.absensi.db.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 
@@ -15,11 +12,14 @@ import java.util.Collection;
 public class Perusahaan {
 
     @Id
-    @Getter
-    private String perusahaan;
+    @GeneratedValue
+    private Long id;
 
-    public Perusahaan(String perusahaan) {
-        this.perusahaan = perusahaan;
+    @Getter
+    private String nama;
+
+    public Perusahaan(String nama) {
+        this.nama = nama;
     }
 
     public Perusahaan() {}

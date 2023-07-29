@@ -13,13 +13,15 @@ import java.util.Collection;
 public class User implements UserDetails {
 
     @Id
+    @Column(unique = true)
     private String email;
 
     @Column
     private String password;
 
     @ManyToOne
-    @JoinColumn(name = "perusahaan", nullable = false)
+    @JoinColumn(name = "perusahaan_id", nullable = false)
+    @Getter
     private Perusahaan perusahaan;
 
     @Getter

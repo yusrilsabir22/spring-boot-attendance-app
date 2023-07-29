@@ -3,10 +3,10 @@ package com.test.absensi.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
-public class EtAuthException extends RuntimeException {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class BadRequest extends RuntimeException {
 
-    public EtAuthException(String message) {
+    public BadRequest(String message) {
         super(message);
     }
 }

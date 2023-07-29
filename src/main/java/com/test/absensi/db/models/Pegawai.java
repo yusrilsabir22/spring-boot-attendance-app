@@ -19,7 +19,7 @@ public class Pegawai {
     private String nikUser;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "nama_lengkap")
@@ -30,6 +30,10 @@ public class Pegawai {
 
     @Column(name = "tanggal_lahir")
     private int tanggalLahir;
+
+    @ManyToOne
+    @JoinColumn(name = "perusahaan_id", nullable = false)
+    private Perusahaan perusahaan;
 
     @ManyToOne
     @JoinColumn(name = "kd_departemen")

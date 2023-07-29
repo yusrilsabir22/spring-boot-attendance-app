@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface PerusahaanRepository extends JpaRepository<Perusahaan, String> {
-    @Query("SELECT p FROM Perusahaan p where p.perusahaan=:perusahaan")
+    @Query("SELECT p FROM Perusahaan p where p.nama=:perusahaan")
     Optional<Perusahaan> findOne(String perusahaan);
 
 }

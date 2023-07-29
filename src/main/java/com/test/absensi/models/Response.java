@@ -17,4 +17,26 @@ public class Response {
         private Profile profile;
     }
 
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class User {
+        private String nikUser;
+        private String namaLengkap;
+        private String tempatLahir;
+        private Integer tanggalLahir;
+        private String email;
+        private String password;
+        private Profile profile;
+        private String photo;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class Error {
+        int errorCode;
+        String errorMessage;
+    }
+
 }

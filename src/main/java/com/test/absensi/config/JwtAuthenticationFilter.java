@@ -1,5 +1,6 @@
-package com.test.absensi.middleware;
+package com.test.absensi.config;
 
+import com.test.absensi.exceptions.BadRequest;
 import com.test.absensi.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
@@ -22,10 +23,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
     private final JwtService jwtService;
 
-    @Autowired
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -38,8 +37,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+            BadRequest e = new BadRequest("Invalid");
+            throw e;
+//            exceptionResolver.resolveException(request, response, null, e);
+//            filterChain.doFilter(request, response);
+//            return;
         }
 
         jwt = authHeader.substring(7);
@@ -57,8 +59,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                filterChain.doFilter(request, response);
             }
         }
-        filterChain.doFilter(request, response);
+
     }
 }
