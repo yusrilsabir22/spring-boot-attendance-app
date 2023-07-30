@@ -1,9 +1,9 @@
 package com.test.absensi.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.test.absensi.user.Profile;
+import jakarta.validation.constraints.Email;
+import lombok.*;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public class Request {
 
@@ -12,7 +12,9 @@ public class Request {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class InitData {
+        @NonNull
         private String namaAdmin;
+        @NonNull
         private String perusahaan;
     }
 
@@ -21,8 +23,12 @@ public class Request {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Login {
+        @Email
+        @NonNull
         private String email;
+        @NonNull
         private String password;
+        @NonNull
         private Profile profile;
     }
 

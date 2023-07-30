@@ -1,11 +1,10 @@
 package com.test.absensi.models;
 
+import com.test.absensi.user.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
 
 public class Response {
     @Data
@@ -30,7 +29,19 @@ public class Response {
         private String email;
         private String password;
         private Profile profile;
+        private int kdDepartemen;
+        private String namaDepartemen;
+        private int kdPendidikan;
+        private String namaPendidikan;
+        private int kdJabatan;
+        private String namaJabatan;
+        private int kdUnitKerja;
+        private String namaUnitKerja;
+        private int kdJenisKelamin;
+        private String namaJenisKelamin;
         private String photo;
+        private int createdAt;
+        private int updatedAt;
     }
 
     @Data
