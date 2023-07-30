@@ -7,6 +7,8 @@ import com.test.absensi.jabatan.Jabatan;
 import com.test.absensi.jabatan.JabatanRepository;
 import com.test.absensi.pendidikan.Pendidikan;
 import com.test.absensi.pendidikan.PendidikanRepository;
+import com.test.absensi.presensi.StatusAbsensi;
+import com.test.absensi.presensi.StatusAbsensiRepository;
 import com.test.absensi.unit_kerja.UnitKerja;
 import com.test.absensi.unit_kerja.UnitKerjaRepository;
 import com.test.absensi.user.User;
@@ -35,6 +37,8 @@ public class PerusahaanService {
     private final PendidikanRepository pendidikanRepository;
 
     private final UnitKerjaRepository unitKerjaRepository;
+
+    private final StatusAbsensiRepository statusAbsensiRepository;
 
     public User initData(Request.InitData request) {
 
@@ -75,10 +79,13 @@ public class PerusahaanService {
             unitKerjaRepository.save(new UnitKerja(Utils.DEFAULT_UNIT_KERJA));
         }
 
+        statusAbsensiRepository.saveAll(Utils.getDefaultStatusAbsensi());
+
         Optional<User> currentUser = userRepository.findByEmail(email);
         if(currentUser.isPresent()) {
             return currentUser.get();
         }
+
 
         User user = new User(email, password, profile, perusahaan);
 

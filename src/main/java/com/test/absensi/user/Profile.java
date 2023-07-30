@@ -14,7 +14,9 @@ public enum Profile {
 
     USER(
             Set.of(
-                    Permission.USER_UPDATE
+                    Permission.USER_UPDATE,
+                    Permission.USER_CREATE,
+                    Permission.USER_READ
             )
     ),
     ADMIN(
@@ -26,7 +28,10 @@ public enum Profile {
                     Permission.MANAGER_READ,
                     Permission.MANAGER_UPDATE,
                     Permission.MANAGER_DELETE,
-                    Permission.MANAGER_CREATE
+                    Permission.MANAGER_CREATE,
+                    Permission.USER_UPDATE,
+                    Permission.USER_CREATE,
+                    Permission.USER_READ
             )
     ),
     MANAGER(

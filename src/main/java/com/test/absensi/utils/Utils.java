@@ -1,15 +1,17 @@
 package com.test.absensi.utils;
 
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
 import com.test.absensi.exceptions.BadRequest;
+import com.test.absensi.presensi.StatusAbsensi;
 import com.test.absensi.user.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -20,6 +22,17 @@ public class Utils {
     public static final String DEFAULT_PENDIDIKAN = "PENDIDIKAN";
 
     public static final String DEFAULT_UNIT_KERJA = "PRODUK-1";
+
+    public static enum DEFAULT_STATUS_ABSENSI {
+        HADIR,
+        ABSEN,
+        SAKIT,
+        CUTI,
+        IZIN;
+        public int getOrdinal() {
+            return this.ordinal()+1;
+        }
+    }
 
     public static String randomPasswordGenerator(int len) {
         String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -47,6 +60,12 @@ public class Utils {
     public static int dateToTimestamp(Date date) {
         long timeMilis = date.getTime();
         return (int) TimeUnit.MILLISECONDS.toSeconds(timeMilis);
+    }
+
+    public static List<StatusAbsensi> getDefaultStatusAbsensi() {
+        return Arrays.stream(DEFAULT_STATUS_ABSENSI.values())
+                .map(defaultStatusAbsensi -> new StatusAbsensi(defaultStatusAbsensi.getOrdinal(), defaultStatusAbsensi.name()))
+                .collect(Collectors.toList());
     }
 
 }

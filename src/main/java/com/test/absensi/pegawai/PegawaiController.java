@@ -92,6 +92,4 @@ public class PegawaiController {
     public ResponseEntity<List<JenisKelamin>> getAllJenisKelamin() {
         return ResponseEntity.ok(pegawaiService.getAllJenisKelamin());
     }
-
-
 }

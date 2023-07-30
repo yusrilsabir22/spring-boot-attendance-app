@@ -1,10 +1,11 @@
 package com.test.absensi.presensi;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table("status_absensi")
+@Table(name = "status_absensi")
 @NoArgsConstructor
 public class StatusAbsensi {
 
@@ -16,4 +17,8 @@ public class StatusAbsensi {
     @Column(name = "nama_status")
     private String namaStatus;
 
+    public StatusAbsensi(int kdStatus, String namaStatus) {
+        this.kdStatus = kdStatus;
+        this.namaStatus = namaStatus;
+    }
 }

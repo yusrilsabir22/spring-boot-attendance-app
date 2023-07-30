@@ -38,11 +38,19 @@ public class SecurityConfig {
                         .permitAll()
 
                         .requestMatchers("/api/pegawai/**").hasAnyRole(Profile.ADMIN.name(), Profile.MANAGER.name(), Profile.USER.name())
+                        .requestMatchers("/api/presensi/**").hasAnyRole(Profile.ADMIN.name(), Profile.MANAGER.name(), Profile.USER.name())
 
                         .requestMatchers(HttpMethod.GET, "/api/pegawai/admin-**").hasAnyAuthority(Permission.ADMIN_READ.name(), Permission.MANAGER_READ.name())
                         .requestMatchers(HttpMethod.POST, "/api/pegawai/admin-**").hasAnyAuthority(Permission.ADMIN_CREATE.name(), Permission.MANAGER_CREATE.name())
 
                         .requestMatchers(HttpMethod.POST, "/api/pegawai/ubah-**").hasAnyAuthority(Permission.USER_UPDATE.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/presensi/in").hasAnyAuthority(Permission.USER_UPDATE.name(), Permission.MANAGER_UPDATE.name())
+                        .requestMatchers(HttpMethod.GET, "/api/presensi/out").hasAnyAuthority(Permission.USER_UPDATE.name(), Permission.MANAGER_UPDATE.name())
+                        .requestMatchers(HttpMethod.POST, "/api/presensi/absensi").hasAnyAuthority(Permission.USER_CREATE .name(), Permission.MANAGER_CREATE.name())
+                        .requestMatchers(HttpMethod.GET, "/api/presensi/datar/pegawai").hasAnyAuthority(Permission.USER_READ.name(), Permission.MANAGER_READ.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/presensi/datar/admin").hasAnyAuthority(Permission.ADMIN_READ.name(), Permission.MANAGER_READ.name())
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session

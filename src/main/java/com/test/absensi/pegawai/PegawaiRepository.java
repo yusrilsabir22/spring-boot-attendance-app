@@ -17,4 +17,6 @@ public interface PegawaiRepository extends JpaRepository<Pegawai, String> {
     @Query("SELECT p FROM Pegawai p WHERE p.nikUser=:nikUser")
     Optional<Pegawai> findOneByNikUser(String nikUser);
 
+    @Query("SELECT p FROM Pegawai p WHERE p.user.email=:email")
+    Optional<Pegawai> findPegawaiByUserEmail(String email);
 }

@@ -7,6 +7,7 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,5 +61,11 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Response.Error> globalException(GlobalException ex) {
         Response.Error response = new Response.Error(ex.getStatus(), ex.getMessage());
         return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @ExceptionHandler({ConversionFailedException.class})
+    public ResponseEntity<?> conversionFailed(ConversionFailedException conversionFailedException) {
+        System.out.println(conversionFailedException.getValue());
+        return ResponseEntity.internalServerError().body("failed");
     }
 }

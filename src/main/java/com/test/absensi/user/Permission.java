@@ -14,7 +14,9 @@ public enum Permission {
     MANAGER_UPDATE("management:update"),
     MANAGER_CREATE("management:create"),
     MANAGER_DELETE("management:delete"),
-    USER_UPDATE("user:update")
+    USER_UPDATE("user:update"),
+    USER_CREATE("user:create"),
+    USER_READ("user:read")
     ;
 
     @Getter
