@@ -1,4 +1,3 @@
-dev.id.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -32,6 +31,5 @@ build/
 ### VS Code ###
 .vscode/
 
-### Docker data volum ###
+### Docker data volume ###
 docker/.data
-/docker/**/postgresql
