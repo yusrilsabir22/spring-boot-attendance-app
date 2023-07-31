@@ -4,7 +4,6 @@ import com.test.absensi.departemen.Departemen;
 import com.test.absensi.jabatan.Jabatan;
 import com.test.absensi.models.TypeJenisKelamin;
 import com.test.absensi.pendidikan.Pendidikan;
-import com.test.absensi.presensi.Presensi;
 import com.test.absensi.unit_kerja.UnitKerja;
 import com.test.absensi.user.User;
 import jakarta.persistence.*;
@@ -57,8 +56,6 @@ public class Pegawai {
     @ManyToOne
     @JoinColumn(name = "kd_pendidikan")
     private Pendidikan pendidikan;
-
-    private String photo;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

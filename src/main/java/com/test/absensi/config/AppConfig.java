@@ -1,7 +1,15 @@
 package com.test.absensi.config;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.test.absensi.user.UserRepository;
+import com.test.absensi.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +26,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AppConfig {
 
     private final UserRepository userRepository;
+
+    @Value("${S3_API_SECRET}")
+    private String S3ApiKeySecret;
+
+    @Value("${S3_API_KEY}")
+    private String S3ApiKey;
+
+    @Value("${S3_BUCKET}")
+    private String S3Bucket;
+
+    @Value("${S3_REGION}")
+    private String S3Region;
+
+    @Value("${S3_ENDPOINT_URL}")
+    private String S3EndpointURL;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -43,5 +66,20 @@ public class AppConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    @Bean
+    public AmazonS3 amazonS3Client() {
+        AWSCredentials credentials = new BasicAWSCredentials(
+                S3ApiKey,
+                S3ApiKeySecret
+        );
+        AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(
+                S3EndpointURL,
+                S3Region
+        );
+        return AmazonS3ClientBuilder.standard()
+                .withEndpointConfiguration(endpointConfiguration)
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .enablePathStyleAccess()
+                .build();
+    }
 }

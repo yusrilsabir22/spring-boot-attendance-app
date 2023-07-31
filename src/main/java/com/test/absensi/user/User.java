@@ -3,7 +3,9 @@ package com.test.absensi.user;
 import com.test.absensi.departemen.Departemen;
 import com.test.absensi.perusahaan.Perusahaan;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,6 +13,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "users")
+@Data
 public class User implements UserDetails {
 
     @Id
@@ -24,6 +27,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "perusahaan_id", nullable = false)
     @Getter
     private Perusahaan perusahaan;
+
+    @Getter
+    @Setter
+    private String photo;
 
     @Getter
     @Enumerated(EnumType.STRING)

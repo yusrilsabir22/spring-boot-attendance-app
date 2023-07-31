@@ -1,14 +1,14 @@
 package com.test.absensi.utils;
 
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
-import com.test.absensi.exceptions.BadRequest;
-import com.test.absensi.presensi.StatusAbsensi;
+import com.test.absensi.status_absensi.StatusAbsensi;
 import com.test.absensi.user.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -66,6 +66,16 @@ public class Utils {
         return Arrays.stream(DEFAULT_STATUS_ABSENSI.values())
                 .map(defaultStatusAbsensi -> new StatusAbsensi(defaultStatusAbsensi.getOrdinal(), defaultStatusAbsensi.name()))
                 .collect(Collectors.toList());
+    }
+
+    public static File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+        try(
+                FileOutputStream fos = new FileOutputStream( convFile ))
+        {
+            fos.write( file.getBytes() );
+        }
+        return convFile;
     }
 
 }

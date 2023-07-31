@@ -1,4 +1,4 @@
-package com.test.absensi.presensi;
+package com.test.absensi.presensi.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

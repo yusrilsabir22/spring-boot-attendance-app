@@ -1,7 +1,10 @@
 package com.test.absensi.departemen;
 
+import com.test.absensi.pegawai.Pegawai;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 
 @Entity

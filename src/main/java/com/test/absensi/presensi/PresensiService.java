@@ -1,15 +1,14 @@
 package com.test.absensi.presensi;
 
-import com.test.absensi.exceptions.BadRequest;
 import com.test.absensi.pegawai.Pegawai;
 import com.test.absensi.pegawai.PegawaiRepository;
-import com.test.absensi.user.Profile;
+import com.test.absensi.presensi.models.*;
+import com.test.absensi.status_absensi.StatusAbsensi;
+import com.test.absensi.status_absensi.StatusAbsensiRepository;
 import com.test.absensi.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +25,7 @@ public class PresensiService {
 
     public boolean checkIn(){
         var userSession = Utils.getUserSession();
-        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername());
+        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername(), userSession.getPerusahaan());
         var waktuMasuk = new Date(System.currentTimeMillis());
 
         if(pegawai.isEmpty()) {
@@ -64,7 +63,7 @@ public class PresensiService {
 
     public boolean checkOut() {
         var userSession = Utils.getUserSession();
-        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername());
+        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername(), userSession.getPerusahaan());
         var waktuKeluar = new Date(System.currentTimeMillis());
 
         if(pegawai.isEmpty()) {
@@ -98,7 +97,7 @@ public class PresensiService {
 
     public boolean abseni(RequestAbsen request) {
         var userSession = Utils.getUserSession();
-        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername());
+        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername(), userSession.getPerusahaan());
 
         if(pegawai.isEmpty()) {
             // Send logger to some logging service or throw error to send to the user-client
@@ -127,7 +126,7 @@ public class PresensiService {
 
     public List<DaftarPresensiResponse> daftarPresensi() {
         var userSession = Utils.getUserSession();
-        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername());
+        Optional<Pegawai> pegawai = pegawaiRepository.findPegawaiByUserEmail(userSession.getUsername(), userSession.getPerusahaan());
         if(pegawai.isEmpty()) {
             System.out.println("PresensiService-daftarPresensi: pegawai tidak ditemukan");
             return List.of();

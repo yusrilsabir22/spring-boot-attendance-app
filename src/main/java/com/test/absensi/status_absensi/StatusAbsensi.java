@@ -1,4 +1,4 @@
-package com.test.absensi.presensi;
+package com.test.absensi.status_absensi;
 
 import jakarta.persistence.*;
 import lombok.Getter;

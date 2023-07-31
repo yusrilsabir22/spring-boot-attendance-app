@@ -11,3 +11,39 @@ services:
     volumes:
       - ./.data/postgresql:/var/lib/postgresql/data/pgdata
       - ./:/docker-entrypoint-initdb.d/
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566-4584:4566-4584"
+    environment:
+      - SERVICES=s3,ses
+      - DATA_DIR=/var/lib/localstack/data
+    volumes:
+      - ./.data/localstack:/var/lib/localstack/data
+      - ./:/docker-entrypoint-initaws.d/
+  web:
+    build:
+      context: ../
+    ports:
+      - '8082:8082'
+    environment:
+      - 'POSTGRES_USER=absensi'
+      - 'POSTGRES_DB=absensi'
+      - 'POSTGRES_PASSWORD=absensi'
+      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/absensi'
+      - 'POSTGRES_HOST=postgres'
+      - 'POSTGRES_PORT=5434'
+      - 'SECRET_KEY=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970'
+      - 'S3_ENDPOINT_URL=http://localstack:4566'
+      - 'S3_API_KEY=1'
+      - 'S3_API_SECRET=1'
+      - 'S3_BUCKET=absensi'
+      - 'S3_REGION=us-east-1'
+    depends_on:
+      localstack:
+        condition: service_started
+      postgres:
+        condition: service_started
+    links:
+      - postgres
+      - localstack

@@ -3,6 +3,9 @@ package com.test.absensi.presensi;
 import com.test.absensi.pegawai.Pegawai;
 
 import com.test.absensi.perusahaan.Perusahaan;
+import com.test.absensi.presensi.models.DaftarAdminPresensiResponse;
+import com.test.absensi.presensi.models.DaftarPresensiResponse;
+import com.test.absensi.presensi.models.Presensi;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,12 +27,12 @@ public interface PresensiRepository extends JpaRepository<Presensi, Integer> {
     """)
     Optional<Presensi> findLatestEntry(Pegawai pegawai);
     @Query(value = """
-        SELECT new com.test.absensi.presensi.DaftarPresensiResponse(presensi.tglAbsensi, presensi.jamMasuk, presensi.jamKeluar, presensi.statusAbsensi.namaStatus) FROM Presensi presensi 
+        SELECT new com.test.absensi.presensi.models.DaftarPresensiResponse(presensi.tglAbsensi, presensi.jamMasuk, presensi.jamKeluar, presensi.statusAbsensi.namaStatus) FROM Presensi presensi 
         WHERE presensi.pegawai=:pegawai ORDER BY presensi.id, presensi.jamKeluar DESC 
     """)
     List<DaftarPresensiResponse> findAllByPegawai(Pegawai pegawai);
     @Query(value = """
-        SELECT new com.test.absensi.presensi.DaftarAdminPresensiResponse(presensi.pegawai.nikUser, presensi.pegawai.namaLengkap, presensi.tglAbsensi, presensi.jamMasuk, presensi.jamKeluar, presensi.statusAbsensi.namaStatus) FROM Presensi presensi  
+        SELECT new com.test.absensi.presensi.models.DaftarAdminPresensiResponse(presensi.pegawai.nikUser, presensi.pegawai.namaLengkap, presensi.tglAbsensi, presensi.jamMasuk, presensi.jamKeluar, presensi.statusAbsensi.namaStatus) FROM Presensi presensi  
         WHERE presensi.pegawai.user.perusahaan=:perusahaan
         AND presensi.tglAbsensi BETWEEN :startDate AND :endDate 
     """)

@@ -24,14 +24,11 @@ public enum Profile {
                     Permission.ADMIN_READ,
                     Permission.ADMIN_UPDATE,
                     Permission.ADMIN_DELETE,
-                    Permission.ADMIN_CREATE,
-                    Permission.MANAGER_READ,
-                    Permission.MANAGER_UPDATE,
-                    Permission.MANAGER_DELETE,
-                    Permission.MANAGER_CREATE,
-                    Permission.USER_UPDATE,
-                    Permission.USER_CREATE,
-                    Permission.USER_READ
+                    Permission.ADMIN_CREATE
+//                    Permission.MANAGER_READ,
+//                    Permission.MANAGER_UPDATE,
+//                    Permission.MANAGER_DELETE,
+//                    Permission.MANAGER_CREATE
             )
     ),
     MANAGER(

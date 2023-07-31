@@ -22,28 +22,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.naming.AuthenticationException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.MissingResourceException;
 import java.util.Objects;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        // Example field error
-        try {
-            String field = Objects.requireNonNull(ex.getFieldError()).getField();
-            String rejectedValue = Objects.requireNonNull(ex.getFieldError().getRejectedValue()).toString();
-            logger.info("error on field "+field+" with value "+rejectedValue);
-        } catch (NullPointerException ignored) {}
-        return super.handleMethodArgumentNotValid(ex, headers, status, request);
-    }
-
     @ExceptionHandler({
             AuthenticationException.class,
             UsernameNotFoundException.class,
-            JwtException.class,
-            RuntimeException.class
+            JwtException.class
     })
     public ResponseEntity<Response.Error> handleAuthenticationException(Exception ex) {
         final String message;
@@ -54,18 +44,19 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
         }
         Response.Error response = new Response.Error(HttpStatus.UNAUTHORIZED.value(),
                 message);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(response);
     }
 
     @ExceptionHandler({GlobalException.class})
-    public ResponseEntity<Response.Error> globalException(GlobalException ex) {
-        Response.Error response = new Response.Error(ex.getStatus(), ex.getMessage());
-        return ResponseEntity.status(response.getStatusCode()).body(response);
+    public ResponseEntity<Response.Error> globalException(Exception ex) {
+        Response.Error response = new Response.Error(HttpStatus.NOT_IMPLEMENTED.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(response);
     }
 
-    @ExceptionHandler({ConversionFailedException.class})
-    public ResponseEntity<?> conversionFailed(ConversionFailedException conversionFailedException) {
-        System.out.println(conversionFailedException.getValue());
-        return ResponseEntity.internalServerError().body("failed");
-    }
+//    @ExceptionHandler({Exception.class})
+//    public ResponseEntity<?> missingResourceEx(Exception ex) {
+//        System.out.println(ex.getMessage());
+//        System.out.println(ex.);
+//        return ResponseEntity.internalServerError().body(ex.getMessage());
+//    }
 }

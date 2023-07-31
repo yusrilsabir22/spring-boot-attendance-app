@@ -1,5 +1,6 @@
 package com.test.absensi.pegawai;
 
+import com.test.absensi.user.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ public class RequestPegawai {
     private String nikUser;
     private String namaLengkap;
     private String email;
+    private Profile profile;
     private String tempatLahir;
     private Integer tanggalLahir;
     private Integer kdJenisKelamin;

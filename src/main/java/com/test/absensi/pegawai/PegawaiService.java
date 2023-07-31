@@ -15,7 +15,11 @@ import com.test.absensi.unit_kerja.UnitKerja;
 import com.test.absensi.unit_kerja.UnitKerjaRepository;
 import com.test.absensi.user.Profile;
 import com.test.absensi.models.Response;
+import com.test.absensi.user.User;
+import com.test.absensi.user.UserRepository;
 import com.test.absensi.utils.Utils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,38 +43,18 @@ public class PegawaiService {
 
     private final UnitKerjaRepository unitKerjaRepository;
 
+    private final UserRepository userRepository;
+
     public List<Response.User> getAllPegawai() {
         var userSession = Utils.getUserSession();
         List<Pegawai> pegawais = pegawaiRepository.findAllByPerusahaan(userSession.getPerusahaan());
-        return pegawais.stream()
-                .map(pegawai -> Response.User.builder()
-                        .nikUser(pegawai.getNikUser())
-                        .namaLengkap(pegawai.getNamaLengkap())
-                        .tempatLahir(pegawai.getTempatLahir())
-                        .tanggalLahir(Utils.dateToTimestamp(pegawai.getTanggalLahir()))
-                        .email(pegawai.getUser().getUsername())
-                        .password(pegawai.getUser().getPassword())
-                        .profile(pegawai.getUser().getProfile())
-                        .kdDepartemen(pegawai.getDepartemen().getKdDepartemen())
-                        .namaDepartemen(pegawai.getDepartemen().getNamaDepartemen())
-                        .kdJabatan(pegawai.getJabatan().getKdJabatan())
-                        .namaJabatan(pegawai.getJabatan().getNamaJabatan())
-                        .kdPendidikan(pegawai.getPendidikan().getKdPendidikan())
-                        .namaPendidikan(pegawai.getPendidikan().getNamaPendidikan())
-                        .kdUnitKerja(pegawai.getUnitKerja().getKdUnitKerja())
-                        .namaUnitKerja(pegawai.getUnitKerja().getNamaUnitKerja())
-                        .kdJenisKelamin(pegawai.getJenisKelamin().ordinal())
-                        .namaJenisKelamin(pegawai.getJenisKelamin().name())
-                        .photo(pegawai.getPhoto())
-                        .createdAt(Utils.dateToTimestamp(pegawai.getCreatedAt()))
-                        .updatedAt(Utils.dateToTimestamp(pegawai.getUpdatedAt()))
-                        .build())
-                .collect(Collectors.toList());
+        return Response.User.toList(pegawais);
     }
 
+    // TODO need to optimize transaction query
     public Pegawai add(RequestPegawai pegawai) {
         var userSession = Utils.getUserSession();
-        Optional<Pegawai> currentPegawai = pegawaiRepository.findOneByNikUser(pegawai.getNikUser());
+        Optional<Pegawai> currentPegawai = pegawaiRepository.findOneByNikUser(pegawai.getNikUser(), userSession.getPerusahaan());
 
         if(currentPegawai.isPresent()) {
             throw new DuplicateException("Nik Pegawai sudah terdaftar");
@@ -100,6 +84,11 @@ public class PegawaiService {
             throw new BadRequest("unit kerja tidak ditemukan");
         }
 
+        if(pegawai.getKdJenisKelamin() < 0) {
+            throw new BadRequest("Jenis kelamin tidak ditemukan");
+        }
+        final int kdJenisKelamin = pegawai.getKdJenisKelamin() == 0 ? 0 : pegawai.getKdJenisKelamin() - 1;
+
         String password = pegawai.getPassword(); //Utils.randomPasswordGenerator(16);
         String email = Utils.generateEmail(pegawai.getNamaLengkap(), userSession.getPerusahaan().getNama());
         var user = authService.create(email, password, Profile.USER);
@@ -114,7 +103,7 @@ public class PegawaiService {
                 .jabatan(jabatan.get())
                 .pendidikan(pendidikan.get())
                 .unitKerja(unitKerja.get())
-                .jenisKelamin(TypeJenisKelamin.values()[pegawai.getKdJenisKelamin()])
+                .jenisKelamin(TypeJenisKelamin.values()[kdJenisKelamin])
                 .build();
 
         return pegawaiRepository.save(newPegawai);
@@ -142,9 +131,84 @@ public class PegawaiService {
 
     public List<JenisKelamin> getAllJenisKelamin() {
         return Arrays.stream(TypeJenisKelamin.values()).map(typeJenisKelamin -> JenisKelamin.builder()
-                .kdJenisKelamin(typeJenisKelamin.ordinal())
+                .kdJenisKelamin(typeJenisKelamin.getOrdinal())
                 .namaJenisKelamin(typeJenisKelamin.name())
                 .build())
                 .collect(Collectors.toList());
+    }
+
+    // TODO need to optimize transaction query
+    public Pegawai ubahPegawai(RequestPegawai request) {
+        var userSession = Utils.getUserSession();
+        Optional<Pegawai> currentPegawai = pegawaiRepository.findOneByNikUser(request.getNikUser(), userSession.getPerusahaan());
+
+        if(currentPegawai.isEmpty()) {
+            throw new DuplicateException("NIK Pegawai tidak ditemukan");
+        }
+
+        Pegawai pegawai = currentPegawai.get();
+
+        Optional<Departemen> departemen = departemenRepository.findByKdDepartemen(request.getKdDepartemen());
+
+        if(departemen.isEmpty()) {
+            throw new BadRequest("departemen tidak ditemukan");
+        }
+
+        Optional<Jabatan> jabatan = jabatanRepository.findByKdJabatan(request.getKdJabatan());
+
+        if(jabatan.isEmpty()) {
+            throw new BadRequest("jabatan tidak ditemukan");
+        }
+
+        Optional<Pendidikan> pendidikan = pendidikanRepository.findByKdPendidikan(request.getKdPendidikan());
+
+        if(pendidikan.isEmpty()) {
+            throw new BadRequest("pendidikan tidak ditemukan");
+        }
+
+        Optional<UnitKerja> unitKerja = unitKerjaRepository.findByKdUnitKerja(request.getKdUnitKerja());
+
+        if(unitKerja.isEmpty()) {
+            throw new BadRequest("unit kerja tidak ditemukan");
+        }
+
+        if(request.getKdJenisKelamin() < 0) {
+            throw new BadRequest("Jenis kelamin tidak ditemukan");
+        }
+        final int kdJenisKelamin = request.getKdJenisKelamin() == 0 ? 0 : request.getKdJenisKelamin() - 1;
+
+        pegawai.setDepartemen(departemen.get());
+        pegawai.setJabatan(jabatan.get());
+        pegawai.setPendidikan(pendidikan.get());
+        pegawai.setUnitKerja(unitKerja.get());
+        pegawai.setJenisKelamin(TypeJenisKelamin.values()[kdJenisKelamin]);
+        pegawai.setNamaLengkap(request.getNamaLengkap());
+        pegawai.setNikUser(request.getNikUser());
+        pegawai.setTempatLahir(request.getTempatLahir());
+
+        pegawai.setTanggalLahir(new Date(TimeUnit.SECONDS.toMillis(request.getTanggalLahir())));
+        authService.update(pegawai.getUser(), request.getPassword(), request.getProfile());
+        return pegawaiRepository.save(pegawai);
+    }
+
+    public boolean ubahPhotoPegawai(String photoURL) {
+        var user = Utils.getUserSession();
+        user.setPhoto(photoURL);
+        userRepository.save(user);
+        return true;
+    }
+
+    public List<Response.User> getPegawaiDepartemenHRD() {
+        var userSession = Utils.getUserSession();
+        var perusahaan = userSession.getPerusahaan();
+
+        Optional<Departemen> currentDepartemen = departemenRepository.findByNamaDepartemen("HRD");
+        if(currentDepartemen.isEmpty()) {
+            throw new BadRequest("Departemen HRD tidak di terdaftar");
+        }
+        var departemen = currentDepartemen.get();
+
+        var daftarPegawai = pegawaiRepository.findAllByDepartemenAndPerusahaan(departemen, perusahaan);
+        return Response.User.toList(daftarPegawai);
     }
 }

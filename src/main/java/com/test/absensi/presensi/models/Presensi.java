@@ -1,13 +1,12 @@
-package com.test.absensi.presensi;
+package com.test.absensi.presensi.models;
 
 import com.test.absensi.pegawai.Pegawai;
+import com.test.absensi.status_absensi.StatusAbsensi;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /*
     Relationship between Pegawai and Status Absensi e.g. PegawaiStatusAbsensi
