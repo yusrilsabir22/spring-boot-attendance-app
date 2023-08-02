@@ -1,18 +1,29 @@
 package com.test.absensi.auth;
 
-import com.test.absensi.exceptions.DuplicateException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test.absensi.employee.EmployeeService;
 import com.test.absensi.exceptions.BadRequest;
-import com.test.absensi.pegawai.Pegawai;
-import com.test.absensi.pegawai.PegawaiRepository;
-import com.test.absensi.user.User;
+import com.test.absensi.employee.Employee;
+import com.test.absensi.employee.EmployeeRepository;
+import com.test.absensi.token.Token;
+import com.test.absensi.token.TokenRepository;
+import com.test.absensi.token.TokenType;
 import com.test.absensi.user.Profile;
 import com.test.absensi.models.Request;
 import com.test.absensi.config.jwt.JwtService;
-import com.test.absensi.user.UserRepository;
 import com.test.absensi.utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -20,103 +31,97 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PegawaiRepository pegawaiRepository;
+    private final EmployeeRepository employeeRepository;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final TokenRepository tokenRepository;
 
-    public AuthResponse login(Request.Login request) {
-        if(request.getProfile().name().equals("ADMIN")) {
-            return loginAdmin(request);
-        } else {
-            return loginPegawai(request);
-        }
-    }
-
-    public User create(String email, String password, Profile profile) throws DuplicateException {
-        var userSession = Utils.getUserSession();
-        Optional<User> user = userRepository.findByEmail(email);
-
-        if(user.isPresent()) {
-            throw new DuplicateException("Pengguna telah terdaftar.");
-        }
-
-        User newUser = new User(
-                email,
-                password,
-                profile,
-                userSession.getPerusahaan()
+    public AuthResponse login(Request.Login request){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
         );
-        return userRepository.save(newUser);
-    }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Employee employee = (Employee) authentication.getPrincipal();
 
-    public User update(User oldUser, String newPassword) {
-        oldUser.setPassword(newPassword);
-        return userRepository.save(oldUser);
-    }
-
-    public User update(User oldUser, String newPassword, Profile profile) {
-        oldUser.setPassword(newPassword);
-        oldUser.setProfile(profile);
-        return userRepository.save(oldUser);
-    }
-
-    private AuthResponse loginPegawai(Request.Login request){
-        Optional<Pegawai> currentPegawai = pegawaiRepository.findByEmailAndProfile(request.getEmail(), request.getProfile());
-        if(currentPegawai.isEmpty()) {
-            throw new BadRequest("invalid email or password");
-        }
-        var user = currentPegawai.get().getUser();
-        boolean isPasswordValid = Objects.equals(user.getPassword(), request.getPassword());
-        if(!isPasswordValid) {
-            throw new BadRequest("invalid email or password");
-        }
-
-        var pegawai = currentPegawai.get();
-
-        AuthResponse.Info info = AuthResponse.Info.builder()
-                .kdJenisKelamin(pegawai.getJenisKelamin().getOrdinal())
-                .kdDepartemen(pegawai.getDepartemen().getKdDepartemen())
-                .namaLengkap(pegawai.getNamaLengkap())
-                .kdUnitKerja(pegawai.getUnitKerja().getKdUnitKerja())
-                .tanggalLahir(Utils.dateToTimestamp(pegawai.getTanggalLahir()))
-                .tempatLahir(pegawai.getTempatLahir())
-                .kdPendidikan(pegawai.getPendidikan().getKdPendidikan())
-                .kdJabatan(pegawai.getJabatan().getKdJabatan())
-                .nikUser(pegawai.getNikUser())
-                .profile(pegawai.getUser().getProfile().name())
-                .email(pegawai.getUser().getEmail())
-                .password(pegawai.getUser().getPassword())
-                .photo(pegawai.getUser().getPhoto())
-                .build();
-        String token = jwtService.generateToken(user);
-        AuthResponse.Hasil hasil = AuthResponse.Hasil.builder()
+        var info = AuthResponse.Info.build(employee);
+        String token = jwtService.generateToken(employee);
+        String refreshToken = jwtService.generateRefreshToken(employee);
+        revokeAllUserTokens(employee);
+        saveUserToken(employee, token);
+        AuthResponse.Result result = AuthResponse.Result.builder()
                 .info(info)
                 .token(token)
+                .refreshToken(refreshToken)
                 .build();
-        return new AuthResponse(hasil);
+        return new AuthResponse(result);
     }
 
-    private AuthResponse loginAdmin(Request.Login request) {
-        Optional<User> user = userRepository.findByEmailAndProfile(request.getEmail(), request.getProfile());
-        if(user.isEmpty()) {
-            throw new BadRequest("invalid email or password");
-        }
-        boolean isPasswordValid = Objects.equals(user.get().getPassword(), request.getPassword());
-        if(!isPasswordValid) {
-            throw new BadRequest("invalid email or password");
-        }
-        String token = jwtService.generateToken(user.get());
+    public String updatePassword(AuthChangePasswordRequest request) {
+        var userSession = Utils.getUserSession();
 
-        AuthResponse.Info info = AuthResponse.Info.builder()
-                .profile(user.get().getProfile().name())
-                .email(user.get().getEmail())
-                .password(user.get().getPassword())
-                .photo(user.get().getPhoto())
-                .build();
-        AuthResponse.Hasil hasil = AuthResponse.Hasil.builder()
-                .info(info)
+        if(
+                !Objects.equals(request.getOldPassword(), userSession.getPassword()) ||
+                !Objects.equals(request.getNewPassword(), request.getNewPasswordConfirmation())
+        ) {
+            throw new UsernameNotFoundException("invalid email or password");
+        }
+        userSession.setPassword(request.getNewPasswordConfirmation());
+        employeeRepository.save(userSession);
+        return "success";
+    }
+
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String refreshToken;
+        final String userEmail;
+        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+            return;
+        }
+        refreshToken = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(refreshToken);
+        if (userEmail != null) {
+            var employee = employeeRepository.findByEmail(userEmail)
+                    .orElseThrow();
+            AuthResponse.Info info = AuthResponse.Info.build(employee);
+            if (jwtService.isTokenValid(refreshToken, employee)) {
+                var accessToken = jwtService.generateToken(employee);
+                revokeAllUserTokens(employee);
+                saveUserToken(employee, accessToken);
+                var authResponse = AuthResponse.Result.builder()
+                        .token(accessToken)
+                        .refreshToken(refreshToken)
+                        .info(info)
+                        .build();
+                new ObjectMapper().writeValue(response.getOutputStream(), new AuthResponse(authResponse));
+            }
+        }
+    }
+
+    private void saveUserToken(Employee employee, String token) {
+        var jwtToken = Token.builder()
+                .employee(employee)
                 .token(token)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
                 .build();
-        return new AuthResponse(hasil);
+        tokenRepository.save(jwtToken);
+    }
+
+    private void revokeAllUserTokens(Employee employee) {
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(employee.getId());
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
     }
 }

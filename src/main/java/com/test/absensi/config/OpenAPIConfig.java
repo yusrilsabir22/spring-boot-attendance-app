@@ -13,12 +13,12 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(
         info = @Info(
                 contact = @Contact(
-                        name = "Presensi",
-                        email = "contact@perusahaan.com",
+                        name = "Attendance",
+                        email = "contact@company.com",
                         url = "https://perusahaan-url.com"
                 ),
-                description = "OpenApi documentation for Presensi Application",
-                title = "OpenApi specification - Presensi",
+                description = "OpenApi documentation for Attendance Application",
+                title = "OpenApi specification - Attendance",
                 version = "1.0",
                 license = @License(
                         name = "Licence name",

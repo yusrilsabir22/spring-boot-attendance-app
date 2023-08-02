@@ -46,14 +46,14 @@ berisi:
 |   |   |               |   +---db
 |   |   |               |   +---jwt
 |   |   |               |   \---security
-|   |   |               +---departemen           <---- Module API
+|   |   |               +---department           <---- Module API
 |   |   |               +---exceptions
 |   |   |               +---jabatan              <---- Module API
 |   |   |               +---models              
-|   |   |               +---pegawai              <---- Module API
+|   |   |               +---employee              <---- Module API
 |   |   |               +---pendidikan           <---- Module API
-|   |   |               +---perusahaan           <---- Module API
-|   |   |               +---presensi             <---- Module API
+|   |   |               +---company           <---- Module API
+|   |   |               +---attendance             <---- Module API
 |   |   |               |   \---models
 |   |   |               +---status_absensi       <---- Module API
 |   |   |               +---unit_kerja           <---- Module API

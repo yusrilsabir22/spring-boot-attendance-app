@@ -3,4 +3,4 @@
 docker-compose \
     --project-name absensi \
     --file docker/docker-compose.yaml \
-    down --remove-orphans
+    up --detach --remove-orphans

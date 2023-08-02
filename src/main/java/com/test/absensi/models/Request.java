@@ -3,7 +3,6 @@ package com.test.absensi.models;
 import com.test.absensi.user.Profile;
 import jakarta.validation.constraints.Email;
 import lombok.*;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public class Request {
 
@@ -13,9 +12,9 @@ public class Request {
     @NoArgsConstructor
     public static class InitData {
         @NonNull
-        private String namaAdmin;
+        private String adminName;
         @NonNull
-        private String perusahaan;
+        private String company;
     }
 
     @Data
