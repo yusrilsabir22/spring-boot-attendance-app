@@ -1,16 +1,13 @@
 package com.test.absensi.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.test.absensi.employee.EmployeeService;
-import com.test.absensi.exceptions.BadRequest;
+import com.test.absensi.config.jwt.JwtService;
 import com.test.absensi.employee.Employee;
 import com.test.absensi.employee.EmployeeRepository;
+import com.test.absensi.models.Request;
 import com.test.absensi.token.Token;
 import com.test.absensi.token.TokenRepository;
 import com.test.absensi.token.TokenType;
-import com.test.absensi.user.Profile;
-import com.test.absensi.models.Request;
-import com.test.absensi.config.jwt.JwtService;
 import com.test.absensi.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

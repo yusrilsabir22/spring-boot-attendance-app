@@ -1,6 +1,5 @@
 package com.test.absensi.exceptions;
 
-import com.amazonaws.services.xray.model.Http;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

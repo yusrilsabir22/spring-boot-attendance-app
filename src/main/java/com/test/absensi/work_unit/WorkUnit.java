@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "work_unit")
 @NoArgsConstructor
@@ -16,7 +17,6 @@ public class WorkUnit {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
-    @Getter
     private Integer id;
 
     @Column(name = "name")
